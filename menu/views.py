@@ -43,6 +43,7 @@ def create_new_menu(request):
             menu = form.save(commit=False)
             menu.created_date = timezone.now()
             menu.save()
+            form.save_m2m()
             return redirect('menu_detail', pk=menu.pk)
     else:
         form = MenuForm()
@@ -50,29 +51,16 @@ def create_new_menu(request):
 
 
 def edit_menu(request, pk):
-
-    form = MenuForm(request.POST)
-    if form.is_valid():
-        menu = form.save(commit=False)
-        menu.created_date = timezone.now()
-        menu.save()
+    menu = get_object_or_404(Menu, pk=pk)
+    form = MenuForm(instance=menu)
+    if request.method == "POST":
+        form = MenuForm(request.POST, instance=menu)
+        if form.is_valid():
+            menu = form.save(commit=False)
+            menu.created_date = timezone.now()
+            menu.save()
+            form.save_m2m()
         return redirect('menu_detail', pk=menu.pk)
-    else:
-        form = MenuForm()
     return render(request, 'menu/menu_edit.html', {
         'form': form,
     })
-    """
-    menu = get_object_or_404(Menu, pk=pk)
-    items = Item.objects.all()
-    if request.method == "POST":
-        menu.season = request.POST.get('season', '')
-        menu.expiration_date = datetime.strptime(request.POST.get('expiration_date', ''), '%m/%d/%Y')
-        menu.items = request.POST.get('items', '')
-        menu.save()
-
-    return render(request, 'menu/change_menu.html', {
-        'menu': menu,
-        'items': items,
-        })
-    """
