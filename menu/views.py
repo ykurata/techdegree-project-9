@@ -69,6 +69,4 @@ def edit_menu(request, pk):
         if form.is_valid():
             form.save()
             return redirect('menu_detail', pk=menu.pk)
-    return render(request, 'menu/menu_edit.html', {
-        'form': form,
-    })
+    return render(request, 'menu/menu_edit.html', {'form': form})
